@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { ArrowIcon, ChevronLeftIcon, ChevronRightIcon, CloseIcon } from "./Icons";
+import { useState } from "react";
+import { ArrowIcon } from "./Icons";
+import { Lightbox } from "./Lightbox";
 
 type Photo = { src: string; label: string; span: string };
 
@@ -12,8 +13,8 @@ const PHOTOS: Photo[] = [
     span: "a",
   },
   {
-    src: "/images/vue-aerienne-piscine.avif",
-    label: "vue aérienne — la maison et la piscine",
+    src: "/images/piscine-vue-maison.avif",
+    label: "la piscine chauffée, vue depuis la maison",
     span: "b",
   },
   {
@@ -22,18 +23,18 @@ const PHOTOS: Photo[] = [
     span: "c",
   },
   {
-    src: "/images/facade-entree.avif",
-    label: "façade — entrée principale",
+    src: "/images/chambre-bois.avif",
+    label: "chambre bois, sous les toits",
     span: "d",
+  },
+  {
+    src: "/images/sejour-salon.avif",
+    label: "le séjour, lumière douce",
+    span: "e",
   },
   {
     src: "/images/parc-cabanon.avif",
     label: "le parc — cabanon sous les chênes",
-    span: "e",
-  },
-  {
-    src: "/images/facade-nord-garage.avif",
-    label: "façade nord, entrée et garage",
     span: "f",
   },
   {
@@ -83,73 +84,5 @@ export function Gallery() {
         />
       )}
     </>
-  );
-}
-
-type LightboxProps = {
-  photos: Photo[];
-  startIndex: number;
-  onClose: () => void;
-};
-
-function Lightbox({ photos, startIndex, onClose }: LightboxProps) {
-  const [i, setI] = useState(startIndex);
-
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-      if (e.key === "ArrowRight") setI((x) => (x + 1) % photos.length);
-      if (e.key === "ArrowLeft") setI((x) => (x - 1 + photos.length) % photos.length);
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [onClose, photos.length]);
-
-  return (
-    <div className="lightbox" onClick={onClose}>
-      <button className="lb-close" onClick={onClose} aria-label="Fermer">
-        <CloseIcon />
-      </button>
-      <button
-        className="lb-nav lb-prev"
-        onClick={(e) => {
-          e.stopPropagation();
-          setI((x) => (x - 1 + photos.length) % photos.length);
-        }}
-        aria-label="Photo précédente"
-      >
-        <ChevronLeftIcon />
-      </button>
-      <div className="lb-body" onClick={(e) => e.stopPropagation()}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={photos[i].src}
-          alt={photos[i].label}
-          style={{
-            width: "min(1100px, 90vw)",
-            maxHeight: "80vh",
-            height: "auto",
-            objectFit: "contain",
-            margin: "0 auto",
-          }}
-        />
-        <div className="lb-caption">
-          {photos[i].label} ·{" "}
-          <span style={{ opacity: 0.5 }}>
-            {i + 1} / {photos.length}
-          </span>
-        </div>
-      </div>
-      <button
-        className="lb-nav lb-next"
-        onClick={(e) => {
-          e.stopPropagation();
-          setI((x) => (x + 1) % photos.length);
-        }}
-        aria-label="Photo suivante"
-      >
-        <ChevronRightIcon />
-      </button>
-    </div>
   );
 }

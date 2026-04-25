@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { fmtKey } from "../lib/calendar";
 import { useDates } from "../lib/datesContext";
-import { ArrowIcon, ExternalIcon, PhoneIcon } from "./Icons";
+import { ArrowIcon, ExternalIcon, PhoneIcon, StarIcon } from "./Icons";
 
 const AIRBNB_BASE = "https://www.airbnb.fr/rooms/1110140582764648931";
 const ABRITEL_BASE = "https://www.abritel.fr/location-vacances/p992349";
@@ -98,7 +98,7 @@ export function ReservationCTA() {
             href={abritelUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="cta-card"
+            className="cta-card cta-card-featured"
           >
             <Image
               src="/logos/abritel.png"
@@ -107,11 +107,21 @@ export function ReservationCTA() {
               height={38}
               className="cta-logo cta-logo-abritel"
             />
-            <div className="cta-label small">Plateforme</div>
-            <div className="cta-num serif" style={{ fontSize: "1.6rem" }}>
+            <div className="cta-rating" aria-label="Note 10 sur 10, 52 avis">
+              <span className="cta-rating-stars" aria-hidden="true">
+                <StarIcon />
+                <StarIcon />
+                <StarIcon />
+                <StarIcon />
+                <StarIcon />
+              </span>
+              <span className="cta-rating-score serif">10<span className="cta-rating-out">/10</span></span>
+              <span className="cta-rating-count small">· 52 avis vérifiés</span>
+            </div>
+            <div className="cta-num serif" style={{ fontSize: "1.6rem", marginTop: 4 }}>
               {hasDates ? "Réserver ces dates" : "Voir l’annonce"}
             </div>
-            <div className="small" style={{ marginTop: 10, color: "var(--brun-70)" }}>
+            <div className="small" style={{ marginTop: 6, color: "var(--brun-70)" }}>
               Paiement sécurisé
             </div>
             <div className="cta-foot">

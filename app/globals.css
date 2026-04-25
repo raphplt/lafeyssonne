@@ -581,6 +581,61 @@ img {
   flex-shrink: 0;
 }
 
+/* CHAMBRES — mini-galerie */
+.bedrooms-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+@media (max-width: 1100px) {
+  .bedrooms-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 540px) {
+  .bedrooms-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+.bedroom-tile {
+  margin: 0;
+  padding: 0;
+  background: none;
+  border: 0;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font: inherit;
+  color: inherit;
+}
+.bedroom-tile:focus-visible {
+  outline: 2px solid var(--terracotta);
+  outline-offset: 4px;
+}
+.bedroom-tile-img {
+  overflow: hidden;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+}
+.bedroom-tile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform var(--t-med) var(--ease);
+}
+.bedroom-tile:hover img {
+  transform: scale(1.04);
+}
+.bedroom-name {
+  font-size: 13px;
+  font-style: italic;
+  color: var(--brun-70);
+  font-weight: 300;
+}
+
 @media (max-width: 820px) {
   .house-grid {
     grid-template-columns: 1fr;
@@ -885,6 +940,45 @@ img {
   gap: 8px;
 }
 
+/* Rating row sur la carte CTA (Abritel) */
+.cta-card-featured {
+  border-color: rgba(184, 85, 58, 0.35);
+  box-shadow: 0 2px 0 0 var(--terracotta-soft) inset;
+}
+.cta-rating {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 4px 0 6px;
+  flex-wrap: wrap;
+}
+.cta-rating-stars {
+  display: inline-flex;
+  gap: 1px;
+  color: var(--terracotta);
+  align-self: center;
+}
+.cta-rating-stars svg {
+  width: 13px;
+  height: 13px;
+}
+.cta-rating-score {
+  font-size: 1.4rem;
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  color: var(--brun);
+}
+.cta-rating-out {
+  font-size: 0.65em;
+  color: var(--brun-50);
+  margin-left: 1px;
+}
+.cta-rating-count {
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  color: var(--brun-50);
+}
+
 /* SURROUNDINGS */
 .surr-grid {
   display: grid;
@@ -927,6 +1021,7 @@ img {
   margin: 0;
 }
 .surr-map {
+  position: relative;
   background: var(--ivoire-90);
   border: 1px solid var(--brun-15);
   border-radius: 4px;
@@ -934,6 +1029,7 @@ img {
   min-height: 380px;
   height: 100%;
 }
+
 @media (max-width: 960px) {
   .surr-map {
     min-height: 320px;
@@ -1041,6 +1137,50 @@ img {
   font-weight: 500;
   font-size: 11px;
   letter-spacing: 0.04em;
+}
+
+/* TESTIMONIALS — bandeau réputation */
+.reputation {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 28px;
+  padding: 14px 22px;
+  border-top: 1px solid rgba(247, 244, 238, 0.15);
+  border-bottom: 1px solid rgba(247, 244, 238, 0.15);
+}
+.reputation-stars {
+  display: inline-flex;
+  gap: 2px;
+  color: var(--terracotta);
+  align-self: center;
+}
+.reputation-stars svg {
+  width: 16px;
+  height: 16px;
+}
+.reputation-score {
+  font-size: 1.8rem;
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  color: var(--ivoire);
+}
+.reputation-out {
+  font-size: 0.55em;
+  color: rgba(247, 244, 238, 0.5);
+  margin-left: 2px;
+}
+.reputation-meta {
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  color: rgba(247, 244, 238, 0.7);
+}
+.reputation-meta em {
+  font-style: italic;
+  color: var(--terracotta);
+  margin-right: 4px;
 }
 
 /* TESTIMONIALS */

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { StarIcon } from "./Icons";
 
 const ITEMS = [
   {
@@ -32,6 +33,22 @@ export function Testimonials() {
         <span className="eyebrow" style={{ color: "rgba(247,244,238,0.6)" }}>
           Témoignages
         </span>
+
+        <div className="reputation">
+          <span className="reputation-stars" aria-hidden="true">
+            <StarIcon />
+            <StarIcon />
+            <StarIcon />
+            <StarIcon />
+            <StarIcon />
+          </span>
+          <span className="reputation-score serif">
+            10<span className="reputation-out">/10</span>
+          </span>
+          <span className="reputation-meta">
+            <em>Exceptionnel</em> — 52 avis vérifiés sur Abritel
+          </span>
+        </div>
         <div
           style={{
             minHeight: 260,

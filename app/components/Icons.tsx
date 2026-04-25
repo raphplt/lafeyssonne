@@ -111,6 +111,12 @@ export const WasherIcon = (p: IconProps) => (
   </svg>
 );
 
+export const StarIcon = (p: IconProps) => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" {...p}>
+    <path d="M12 2.5l2.95 6.6 7.05.7-5.3 4.85 1.55 7.05-6.25-3.7-6.25 3.7L7.3 14.65 2 9.8l7.05-.7L12 2.5z" />
+  </svg>
+);
+
 export const ParkIcon = (p: IconProps) => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.1" {...p}>
     <rect x="3" y="8" width="18" height="12" rx="1" />

@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import {
   AcIcon,
   BedIcon,
@@ -9,8 +12,18 @@ import {
   WasherIcon,
   WifiIcon,
 } from "./Icons";
+import { Lightbox, type LightboxPhoto } from "./Lightbox";
+
+const BEDROOMS: LightboxPhoto[] = [
+  { src: "/images/chambre-blanche.avif", label: "Chambre blanche" },
+  { src: "/images/chambre-bois.avif",    label: "Chambre bois" },
+  { src: "/images/chambre-orange.avif",  label: "Chambre orange" },
+  { src: "/images/chambre-rose.avif",    label: "Chambre rose" },
+];
 
 export function House() {
+  const [lbIndex, setLbIndex] = useState<number | null>(null);
+
   return (
     <section id="maison" className="section reveal" style={{ background: "var(--ivoire-90)" }}>
       <div className="container house-grid">
@@ -56,6 +69,27 @@ export function House() {
               <span className="spec-txt">6 à 8 personnes (8 maximum)</span>
             </li>
           </ol>
+
+          <div style={{ marginTop: 56 }}>
+            <span className="eyebrow">Les chambres</span>
+            <div className="bedrooms-grid" style={{ marginTop: 20 }}>
+              {BEDROOMS.map((c, i) => (
+                <button
+                  key={c.src}
+                  type="button"
+                  className="bedroom-tile"
+                  onClick={() => setLbIndex(i)}
+                  aria-label={`Ouvrir la photo : ${c.label}`}
+                >
+                  <div className="bedroom-tile-img">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={c.src} alt={c.label} loading="lazy" />
+                  </div>
+                  <span className="bedroom-name serif">{c.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
 
           <div style={{ marginTop: 56 }}>
             <span className="eyebrow">Équipements</span>
@@ -109,6 +143,14 @@ export function House() {
           </div>
         </div>
       </div>
+
+      {lbIndex !== null && (
+        <Lightbox
+          photos={BEDROOMS}
+          startIndex={lbIndex}
+          onClose={() => setLbIndex(null)}
+        />
+      )}
     </section>
   );
 }
