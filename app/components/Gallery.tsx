@@ -7,38 +7,38 @@ type Photo = { src: string; label: string; span: string };
 
 const PHOTOS: Photo[] = [
   {
-    src: "/images/pictbien_68cab2ecee520.avif",
-    label: "façade sud au coucher du soleil",
+    src: "/images/facade-sud-jardin.avif",
+    label: "façade sud, à l'ombre des chênes",
     span: "a",
   },
   {
-    src: "/images/pictbien_68cab2f6e900f.avif",
-    label: "la piscine chauffée",
+    src: "/images/vue-aerienne-piscine.avif",
+    label: "vue aérienne — la maison et la piscine",
     span: "b",
   },
   {
-    src: "/images/cuisinedete.avif",
+    src: "/images/cuisine-ete-tonnelle.avif",
     label: "cuisine d'été sous la tonnelle",
     span: "c",
   },
   {
-    src: "/images/pictbien_68cab30625d79.avif",
-    label: "chambre sud, lumière de l'après-midi",
+    src: "/images/facade-entree.avif",
+    label: "façade — entrée principale",
     span: "d",
   },
   {
-    src: "/images/IMG_0328.avif",
-    label: "le parc — oliviers centenaires",
+    src: "/images/parc-cabanon.avif",
+    label: "le parc — cabanon sous les chênes",
     span: "e",
   },
   {
-    src: "/images/pictbien_68cab306ace68.avif",
-    label: "terrasse couverte",
+    src: "/images/facade-nord-garage.avif",
+    label: "façade nord, entrée et garage",
     span: "f",
   },
   {
-    src: "/images/Piscine nu_it.avif",
-    label: "volets fermés, heure bleue",
+    src: "/images/piscine-nuit.avif",
+    label: "la piscine à la nuit tombée",
     span: "g",
   },
 ];

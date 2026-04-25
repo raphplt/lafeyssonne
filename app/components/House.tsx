@@ -17,8 +17,8 @@ export function House() {
         <div className="house-photo">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/images/_DSC6325.avif"
-            alt="entrée, pierre sèche & cyprès"
+            src="/images/piscine-transats-jour.avif"
+            alt="la piscine, transats au soleil"
             style={{ width: "100%", aspectRatio: "3/4", objectFit: "cover" }}
             loading="lazy"
           />

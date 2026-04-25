@@ -8,8 +8,8 @@ export function Hero() {
       <div className="hero-img">
         <HeroVideo
           src="/videos/video-promo-hero.mp4"
-          poster="/images/pictbien_68cab2ebe7e0e.avif"
-          posterAlt="Bastide La Feyssonne — façade au coucher du soleil"
+          poster="/images/vue-aerienne-luberon.avif"
+          posterAlt="Bastide La Feyssonne — vue aérienne, le Luberon en arrière-plan"
         />
       </div>
       <div className="hero-overlay" />
