@@ -10,7 +10,7 @@ import {
 } from "../../lib/calendar";
 
 type Reservation = {
-  id: number;
+  id: string;
   start: string;
   end: string;
   status: "reserved" | "blocked" | "available";

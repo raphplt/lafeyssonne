@@ -2,18 +2,27 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { signOut } from "../actions";
 import { AdminCalendarView } from "./AdminCalendarView";
-import { AdminLogin } from "./AdminLogin";
 import { AdminPricingView } from "./AdminPricingView";
 
 type View = "calendar" | "pricing";
 
-export function AdminApp() {
-  const [authed, setAuthed] = useState(false);
+type Props = {
+  userEmail: string;
+};
+
+export function AdminApp({ userEmail }: Props) {
   const [view, setView] = useState<View>("calendar");
   const [dark, setDark] = useState(false);
 
-  if (!authed) return <AdminLogin onLogin={() => setAuthed(true)} />;
+  const initials =
+    userEmail
+      .split("@")[0]
+      .split(/[._-]/)
+      .map((p) => p[0]?.toUpperCase() ?? "")
+      .join("")
+      .slice(0, 2) || "LF";
 
   return (
     <div className={`admin-root ${dark ? "admin-dark" : ""}`}>
@@ -88,21 +97,22 @@ export function AdminApp() {
           </div>
           <div className="admin-top-actions">
             <div className="admin-user">
-              <div className="admin-avatar">PR</div>
+              <div className="admin-avatar">{initials}</div>
               <div>
-                <div style={{ fontSize: 13, fontWeight: 500 }}>Pierre Rambert</div>
-                <div style={{ fontSize: 11, color: "var(--a-muted)" }}>Propriétaire</div>
+                <div style={{ fontSize: 13, fontWeight: 500 }}>{userEmail}</div>
+                <div style={{ fontSize: 11, color: "var(--a-muted)" }}>
+                  Propriétaire
+                </div>
               </div>
             </div>
             <Link href="/" className="admin-btn admin-btn-ghost">
               Voir le site ↗
             </Link>
-            <button
-              className="admin-btn admin-btn-ghost"
-              onClick={() => setAuthed(false)}
-            >
-              Déconnexion
-            </button>
+            <form action={signOut}>
+              <button type="submit" className="admin-btn admin-btn-ghost">
+                Déconnexion
+              </button>
+            </form>
           </div>
         </header>
 
