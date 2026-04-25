@@ -17,7 +17,10 @@ export function HeroVideo({ src, poster, posterAlt }: Props) {
     const video = videoRef.current;
     if (!video) return;
 
-    const onCanPlay = () => setReady(true);
+    const onCanPlay = () => {
+      setReady(true);
+      void video.play().catch(() => {});
+    };
     const onProgress = () => {
       if (!video.duration) return;
       const buffered = video.buffered;
@@ -41,6 +44,7 @@ export function HeroVideo({ src, poster, posterAlt }: Props) {
 
   return (
     <>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={poster}
         alt={posterAlt}
@@ -65,43 +69,6 @@ export function HeroVideo({ src, poster, posterAlt }: Props) {
       >
         <div className="hero-loader-bar" style={{ width: `${progress * 100}%` }} />
       </div>
-
-      <style jsx>{`
-        .hero-poster,
-        .hero-video {
-          position: absolute;
-          inset: 0;
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-        }
-        .hero-poster {
-          z-index: 1;
-        }
-        .hero-video {
-          z-index: 2;
-          transition: opacity 800ms var(--ease);
-        }
-        .hero-loader {
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          height: 2px;
-          z-index: 4;
-          background: rgba(247, 244, 238, 0.08);
-          opacity: 1;
-          transition: opacity 600ms var(--ease) 200ms;
-        }
-        .hero-loader-bar {
-          height: 100%;
-          background: var(--terracotta);
-          transition: width 240ms var(--ease);
-        }
-        .hero-loader-done {
-          opacity: 0;
-        }
-      `}</style>
     </>
   );
 }

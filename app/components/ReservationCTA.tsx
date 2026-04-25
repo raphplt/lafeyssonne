@@ -27,7 +27,12 @@ export function ReservationCTA() {
             </div>
           </a>
 
-          <a href="#" target="_blank" rel="noopener" className="cta-card">
+          <a
+            href="https://www.airbnb.fr/rooms/1110140582764648931"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="cta-card"
+          >
             <div className="cta-platform serif">Airbnb</div>
             <div className="cta-label small">Plateforme</div>
             <div className="cta-num serif" style={{ fontSize: "1.6rem" }}>
@@ -41,7 +46,12 @@ export function ReservationCTA() {
             </div>
           </a>
 
-          <a href="#" target="_blank" rel="noopener" className="cta-card">
+          <a
+            href="https://www.abritel.fr/location-vacances/p992349"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="cta-card"
+          >
             <div className="cta-platform serif">Abritel</div>
             <div className="cta-label small">Plateforme</div>
             <div className="cta-num serif" style={{ fontSize: "1.6rem" }}>
