@@ -1,19 +1,28 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { createClient } from "@/utils/supabase/client";
 
-type Row = { id: number; period: string; price: number; min: number };
+type Row = {
+  id: string;
+  period: string;
+  month_number: number | null;
+  price: number;
+  min_nights: number;
+  sort_order: number;
+};
 
-const INITIAL_ROWS: Row[] = [
-  { id: 1, period: "Mai", price: 220, min: 7 },
-  { id: 2, period: "Juin", price: 250, min: 7 },
-  { id: 3, period: "Juillet", price: 350, min: 10 },
-  { id: 4, period: "Août", price: 350, min: 10 },
-  { id: 5, period: "Septembre", price: 220, min: 7 },
-];
+type DraftRow = Row & { _new?: boolean; _dirty?: boolean };
+
+const supabase = createClient();
 
 export function AdminPricingView() {
-  const [rows, setRows] = useState<Row[]>(INITIAL_ROWS);
+  const [rows, setRows] = useState<DraftRow[]>([]);
+  const [deletedIds, setDeletedIds] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [savedToast, setSavedToast] = useState(false);
   const [open, setOpen] = useState({ tarifs: true, liens: true, contenu: false });
   const [links, setLinks] = useState({
     airbnb: "https://www.airbnb.fr/rooms/1110140582764648931",
@@ -21,24 +30,118 @@ export function AdminPricingView() {
     phone: "+33 6 43 25 05 43",
     caution: "500",
   });
-  const [saved, setSaved] = useState(false);
 
-  function updateRow<K extends keyof Row>(id: number, key: K, val: Row[K]) {
-    setRows((rs) => rs.map((r) => (r.id === id ? { ...r, [key]: val } : r)));
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      const { data, error } = await supabase
+        .from("pricing")
+        .select("id, period, month_number, price, min_nights, sort_order")
+        .order("sort_order", { ascending: true });
+      if (!active) return;
+      if (error) setError(error.message);
+      else setRows((data as Row[]).map((r) => ({ ...r })));
+      setLoading(false);
+    })();
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  function updateRow<K extends keyof Row>(id: string, key: K, val: Row[K]) {
+    setRows((rs) =>
+      rs.map((r) => (r.id === id ? { ...r, [key]: val, _dirty: true } : r)),
+    );
   }
   function addRow() {
+    const tempId = `new_${Date.now()}`;
+    const nextOrder = (rows.at(-1)?.sort_order ?? 0) + 1;
     setRows((rs) => [
       ...rs,
-      { id: Date.now(), period: "Nouvelle période", price: 200, min: 7 },
+      {
+        id: tempId,
+        period: "Nouvelle période",
+        month_number: null,
+        price: 200,
+        min_nights: 7,
+        sort_order: nextOrder,
+        _new: true,
+        _dirty: true,
+      },
     ]);
   }
-  function removeRow(id: number) {
+  function removeRow(id: string) {
+    const row = rows.find((r) => r.id === id);
+    if (row && !row._new) setDeletedIds((ids) => [...ids, id]);
     setRows((rs) => rs.filter((r) => r.id !== id));
   }
 
-  function save() {
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2200);
+  const isDirty =
+    deletedIds.length > 0 || rows.some((r) => r._dirty || r._new);
+
+  async function save() {
+    if (!isDirty || saving) return;
+    setSaving(true);
+
+    const errors: string[] = [];
+
+    if (deletedIds.length) {
+      const { error } = await supabase
+        .from("pricing")
+        .delete()
+        .in("id", deletedIds);
+      if (error) errors.push(error.message);
+    }
+
+    for (const r of rows) {
+      if (r._new) {
+        const { data, error } = await supabase
+          .from("pricing")
+          .insert({
+            period: r.period,
+            month_number: r.month_number,
+            price: r.price,
+            min_nights: r.min_nights,
+            sort_order: r.sort_order,
+          })
+          .select()
+          .single();
+        if (error) errors.push(error.message);
+        else if (data)
+          setRows((cur) =>
+            cur.map((cr) =>
+              cr.id === r.id ? ({ ...(data as Row), _new: false, _dirty: false }) : cr,
+            ),
+          );
+      } else if (r._dirty) {
+        const { error } = await supabase
+          .from("pricing")
+          .update({
+            period: r.period,
+            month_number: r.month_number,
+            price: r.price,
+            min_nights: r.min_nights,
+            sort_order: r.sort_order,
+          })
+          .eq("id", r.id);
+        if (error) errors.push(error.message);
+        else
+          setRows((cur) =>
+            cur.map((cr) => (cr.id === r.id ? { ...cr, _dirty: false } : cr)),
+          );
+      }
+    }
+
+    setDeletedIds([]);
+    setSaving(false);
+
+    if (errors.length) {
+      setError(errors.join(" · "));
+    } else {
+      setError(null);
+      setSavedToast(true);
+      setTimeout(() => setSavedToast(false), 2200);
+    }
   }
 
   return (
@@ -54,63 +157,101 @@ export function AdminPricingView() {
         {open.tarifs && (
           <>
             <div className="admin-card-sub" style={{ marginBottom: 18 }}>
-              Modifiez prix et séjour minimum. Les changements sont appliqués au site
-              dès l&rsquo;enregistrement.
+              Modifiez prix, mois ciblé et séjour minimum. Les changements
+              s&rsquo;appliquent au site dès l&rsquo;enregistrement.
             </div>
-            <table className="admin-table admin-table-edit">
-              <thead>
-                <tr>
-                  <th>Période</th>
-                  <th style={{ width: 180 }}>Prix / nuit</th>
-                  <th style={{ width: 160 }}>Séjour min</th>
-                  <th style={{ width: 40 }} />
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map((r) => (
-                  <tr key={r.id}>
-                    <td>
-                      <input
-                        className="admin-input admin-input-inline"
-                        value={r.period}
-                        onChange={(e) => updateRow(r.id, "period", e.target.value)}
-                      />
-                    </td>
-                    <td>
-                      <div className="admin-input-with-suffix">
-                        <input
-                          className="admin-input admin-input-inline"
-                          type="number"
-                          value={r.price}
-                          onChange={(e) => updateRow(r.id, "price", +e.target.value)}
-                        />
-                        <span>€</span>
-                      </div>
-                    </td>
-                    <td>
-                      <div className="admin-input-with-suffix">
-                        <input
-                          className="admin-input admin-input-inline"
-                          type="number"
-                          value={r.min}
-                          onChange={(e) => updateRow(r.id, "min", +e.target.value)}
-                        />
-                        <span>nuits</span>
-                      </div>
-                    </td>
-                    <td style={{ textAlign: "right" }}>
-                      <button
-                        className="admin-link admin-link-danger"
-                        onClick={() => removeRow(r.id)}
-                        aria-label="Supprimer la ligne"
-                      >
-                        ✕
-                      </button>
-                    </td>
+
+            {loading && <div className="admin-empty">Chargement…</div>}
+
+            {!loading && (
+              <table className="admin-table admin-table-edit">
+                <thead>
+                  <tr>
+                    <th>Période</th>
+                    <th style={{ width: 110 }}>Mois</th>
+                    <th style={{ width: 160 }}>Prix / nuit</th>
+                    <th style={{ width: 150 }}>Séjour min</th>
+                    <th style={{ width: 40 }} />
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {rows.map((r) => (
+                    <tr key={r.id}>
+                      <td>
+                        <input
+                          className="admin-input admin-input-inline"
+                          value={r.period}
+                          onChange={(e) => updateRow(r.id, "period", e.target.value)}
+                        />
+                      </td>
+                      <td>
+                        <select
+                          className="admin-input admin-input-inline"
+                          value={r.month_number ?? ""}
+                          onChange={(e) =>
+                            updateRow(
+                              r.id,
+                              "month_number",
+                              e.target.value === "" ? null : Number(e.target.value),
+                            )
+                          }
+                        >
+                          <option value="">—</option>
+                          <option value="1">01 · Janv.</option>
+                          <option value="2">02 · Févr.</option>
+                          <option value="3">03 · Mars</option>
+                          <option value="4">04 · Avr.</option>
+                          <option value="5">05 · Mai</option>
+                          <option value="6">06 · Juin</option>
+                          <option value="7">07 · Juil.</option>
+                          <option value="8">08 · Août</option>
+                          <option value="9">09 · Sept.</option>
+                          <option value="10">10 · Oct.</option>
+                          <option value="11">11 · Nov.</option>
+                          <option value="12">12 · Déc.</option>
+                        </select>
+                      </td>
+                      <td>
+                        <div className="admin-input-with-suffix">
+                          <input
+                            className="admin-input admin-input-inline"
+                            type="number"
+                            value={r.price}
+                            onChange={(e) =>
+                              updateRow(r.id, "price", Number(e.target.value) || 0)
+                            }
+                          />
+                          <span>€</span>
+                        </div>
+                      </td>
+                      <td>
+                        <div className="admin-input-with-suffix">
+                          <input
+                            className="admin-input admin-input-inline"
+                            type="number"
+                            value={r.min_nights}
+                            onChange={(e) =>
+                              updateRow(r.id, "min_nights", Number(e.target.value) || 1)
+                            }
+                          />
+                          <span>nuits</span>
+                        </div>
+                      </td>
+                      <td style={{ textAlign: "right" }}>
+                        <button
+                          className="admin-link admin-link-danger"
+                          onClick={() => removeRow(r.id)}
+                          aria-label="Supprimer la ligne"
+                        >
+                          ✕
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+
             <button
               className="admin-btn admin-btn-ghost admin-btn-sm"
               onClick={addRow}
@@ -127,44 +268,51 @@ export function AdminPricingView() {
           className="admin-collapse"
           onClick={() => setOpen((o) => ({ ...o, liens: !o.liens }))}
         >
-          <span className="admin-card-title">Liens de réservation &amp; informations</span>
+          <span className="admin-card-title">
+            Liens de réservation &amp; informations
+          </span>
           <span className="admin-chev">{open.liens ? "−" : "+"}</span>
         </button>
         {open.liens && (
-          <div className="admin-form-grid" style={{ marginTop: 10 }}>
-            <div>
-              <label className="admin-label">URL Airbnb</label>
-              <input
-                className="admin-input"
-                value={links.airbnb}
-                onChange={(e) => setLinks({ ...links, airbnb: e.target.value })}
-              />
+          <>
+            <div className="admin-card-sub" style={{ marginBottom: 12 }}>
+              Cette section n&rsquo;est pas encore persistée — réservée à une v2.
             </div>
-            <div>
-              <label className="admin-label">URL Abritel</label>
-              <input
-                className="admin-input"
-                value={links.abritel}
-                onChange={(e) => setLinks({ ...links, abritel: e.target.value })}
-              />
+            <div className="admin-form-grid">
+              <div>
+                <label className="admin-label">URL Airbnb</label>
+                <input
+                  className="admin-input"
+                  value={links.airbnb}
+                  onChange={(e) => setLinks({ ...links, airbnb: e.target.value })}
+                />
+              </div>
+              <div>
+                <label className="admin-label">URL Abritel</label>
+                <input
+                  className="admin-input"
+                  value={links.abritel}
+                  onChange={(e) => setLinks({ ...links, abritel: e.target.value })}
+                />
+              </div>
+              <div>
+                <label className="admin-label">Numéro de téléphone affiché</label>
+                <input
+                  className="admin-input"
+                  value={links.phone}
+                  onChange={(e) => setLinks({ ...links, phone: e.target.value })}
+                />
+              </div>
+              <div>
+                <label className="admin-label">Caution (€)</label>
+                <input
+                  className="admin-input"
+                  value={links.caution}
+                  onChange={(e) => setLinks({ ...links, caution: e.target.value })}
+                />
+              </div>
             </div>
-            <div>
-              <label className="admin-label">Numéro de téléphone affiché</label>
-              <input
-                className="admin-input"
-                value={links.phone}
-                onChange={(e) => setLinks({ ...links, phone: e.target.value })}
-              />
-            </div>
-            <div>
-              <label className="admin-label">Caution (€)</label>
-              <input
-                className="admin-input"
-                value={links.caution}
-                onChange={(e) => setLinks({ ...links, caution: e.target.value })}
-              />
-            </div>
-          </div>
+          </>
         )}
       </div>
 
@@ -204,19 +352,35 @@ export function AdminPricingView() {
         )}
       </div>
 
+      {error && (
+        <div
+          className="admin-empty"
+          style={{ background: "#fef2f2", borderColor: "#fecaca", color: "#b91c1c" }}
+        >
+          {error}
+        </div>
+      )}
+
       <div className="admin-sticky-foot">
         <div style={{ color: "var(--a-muted)", fontSize: 13 }}>
-          {saved ? "✓ Modifications enregistrées" : "Modifications non enregistrées"}
+          {saving
+            ? "Enregistrement…"
+            : isDirty
+              ? "Modifications non enregistrées"
+              : "✓ À jour"}
         </div>
         <div style={{ display: "flex", gap: 10 }}>
-          <button className="admin-btn admin-btn-ghost">Annuler</button>
-          <button className="admin-btn admin-btn-primary" onClick={save}>
+          <button
+            className="admin-btn admin-btn-primary"
+            onClick={save}
+            disabled={!isDirty || saving}
+          >
             Enregistrer les modifications
           </button>
         </div>
       </div>
 
-      {saved && <div className="admin-toast">✓ Modifications enregistrées</div>}
+      {savedToast && <div className="admin-toast">✓ Modifications enregistrées</div>}
     </div>
   );
 }

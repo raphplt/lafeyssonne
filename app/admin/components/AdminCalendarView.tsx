@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { createClient } from "@/utils/supabase/client";
 import {
   MONTHS_FR,
   daysBetween,
@@ -12,23 +13,34 @@ import { AdminMonth, type Reservation } from "./AdminMonth";
 type FormState = {
   status: Reservation["status"];
   note: string;
-  id?: number;
+  id?: string;
 };
 
-const INITIAL_RESERVATIONS: Reservation[] = [
-  { id: 1, start: "2026-05-10", end: "2026-05-17", status: "reserved", note: "Réservation Airbnb — Famille R." },
-  { id: 2, start: "2026-06-05", end: "2026-06-14", status: "reserved", note: "Direct — Couple Moreau" },
-  { id: 3, start: "2026-07-11", end: "2026-07-25", status: "reserved", note: "Abritel — Famille Guyot" },
-  { id: 4, start: "2026-08-01", end: "2026-08-15", status: "reserved", note: "Direct — Famille Delorme" },
-  { id: 5, start: "2026-08-22", end: "2026-08-29", status: "blocked", note: "Famille propriétaire" },
-  { id: 6, start: "2026-09-12", end: "2026-09-19", status: "reserved", note: "Airbnb — Couple Leblanc" },
-];
+type ReservationRow = {
+  id: string;
+  start_date: string;
+  end_date: string;
+  status: Reservation["status"];
+  note: string | null;
+};
 
 const STATUS_OPTIONS: { k: Reservation["status"]; l: string }[] = [
   { k: "available", l: "Disponible" },
   { k: "reserved", l: "Réservé" },
   { k: "blocked", l: "Bloqué (perso)" },
 ];
+
+const supabase = createClient();
+
+function rowToReservation(r: ReservationRow): Reservation {
+  return {
+    id: r.id,
+    start: r.start_date,
+    end: r.end_date,
+    status: r.status,
+    note: r.note ?? "",
+  };
+}
 
 export function AdminCalendarView() {
   const today = useMemo(() => {
@@ -37,11 +49,34 @@ export function AdminCalendarView() {
     return t;
   }, []);
   const [anchor, setAnchor] = useState(() => new Date(2026, 4, 1));
-  const [reservations, setReservations] = useState<Reservation[]>(INITIAL_RESERVATIONS);
+  const [reservations, setReservations] = useState<Reservation[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [selStart, setSelStart] = useState<Date | null>(null);
   const [selEnd, setSelEnd] = useState<Date | null>(null);
   const [form, setForm] = useState<FormState>({ status: "reserved", note: "" });
   const [toast, setToast] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      const { data, error } = await supabase
+        .from("reservations")
+        .select("id, start_date, end_date, status, note")
+        .order("start_date", { ascending: true });
+      if (!active) return;
+      if (error) {
+        setError(error.message);
+      } else {
+        setReservations((data as ReservationRow[]).map(rowToReservation));
+      }
+      setLoading(false);
+    })();
+    return () => {
+      active = false;
+    };
+  }, []);
 
   function findReservation(d: Date) {
     return reservations.find((r) => {
@@ -75,35 +110,47 @@ export function AdminCalendarView() {
     setTimeout(() => setToast(null), 2400);
   }
 
-  function saveRange() {
+  async function saveRange() {
     if (!selStart) return;
     const end = selEnd || selStart;
+    setBusy(true);
     if (form.id !== undefined) {
-      const id = form.id;
-      setReservations((rs) =>
-        rs.map((r) =>
-          r.id === id
-            ? {
-                ...r,
-                start: fmtKey(selStart),
-                end: fmtKey(end),
-                status: form.status,
-                note: form.note,
-              }
-            : r,
-        ),
-      );
-    } else {
-      setReservations((rs) => [
-        ...rs,
-        {
-          id: Date.now(),
-          start: fmtKey(selStart),
-          end: fmtKey(end),
+      const { data, error } = await supabase
+        .from("reservations")
+        .update({
+          start_date: fmtKey(selStart),
+          end_date: fmtKey(end),
           status: form.status,
           note: form.note,
-        },
-      ]);
+        })
+        .eq("id", form.id)
+        .select()
+        .single();
+      setBusy(false);
+      if (error) {
+        showToast(`Erreur : ${error.message}`);
+        return;
+      }
+      const updated = rowToReservation(data as ReservationRow);
+      setReservations((rs) => rs.map((r) => (r.id === updated.id ? updated : r)));
+    } else {
+      const { data, error } = await supabase
+        .from("reservations")
+        .insert({
+          start_date: fmtKey(selStart),
+          end_date: fmtKey(end),
+          status: form.status,
+          note: form.note,
+        })
+        .select()
+        .single();
+      setBusy(false);
+      if (error) {
+        showToast(`Erreur : ${error.message}`);
+        return;
+      }
+      const created = rowToReservation(data as ReservationRow);
+      setReservations((rs) => [...rs, created]);
     }
     showToast(
       `Enregistré · ${selStart.toLocaleDateString("fr-FR")} → ${end.toLocaleDateString("fr-FR")}`,
@@ -113,15 +160,33 @@ export function AdminCalendarView() {
     setForm({ status: "reserved", note: "" });
   }
 
-  function deleteRange() {
+  async function deleteRange() {
     if (form.id !== undefined) {
       const id = form.id;
+      setBusy(true);
+      const { error } = await supabase.from("reservations").delete().eq("id", id);
+      setBusy(false);
+      if (error) {
+        showToast(`Erreur : ${error.message}`);
+        return;
+      }
       setReservations((rs) => rs.filter((r) => r.id !== id));
       showToast("Réservation supprimée");
     }
     setSelStart(null);
     setSelEnd(null);
     setForm({ status: "reserved", note: "" });
+  }
+
+  async function deleteOne(id: string) {
+    setBusy(true);
+    const { error } = await supabase.from("reservations").delete().eq("id", id);
+    setBusy(false);
+    if (error) {
+      showToast(`Erreur : ${error.message}`);
+      return;
+    }
+    setReservations((rs) => rs.filter((r) => r.id !== id));
   }
 
   function cancel() {
@@ -198,110 +263,139 @@ export function AdminCalendarView() {
           </span>
         </div>
 
-        <div className="admin-cal-grid">
-          <div className="admin-cal-months">
-            {months.map((m, i) => (
-              <AdminMonth
-                key={i}
-                year={m.getFullYear()}
-                month={m.getMonth()}
-                today={today}
-                reservations={reservations}
-                selStart={selStart}
-                selEnd={selEnd}
-                onClick={clickDay}
-              />
-            ))}
+        {error && (
+          <div
+            className="admin-empty"
+            style={{ background: "#fef2f2", borderColor: "#fecaca", color: "#b91c1c" }}
+          >
+            Impossible de charger les réservations : {error}
           </div>
+        )}
 
-          <aside className="admin-cal-side">
-            <div className="admin-side-title">
-              {form.id
-                ? "Éditer la réservation"
-                : selStart
-                  ? "Nouvelle période"
-                  : "Sélection"}
-            </div>
-            {!selStart && (
-              <div className="admin-empty">
-                Aucune période sélectionnée.
-                <br />
-                Cliquez sur un jour pour commencer.
-              </div>
-            )}
-            {selStart && (
-              <>
-                <div className="admin-range">
-                  <div>
-                    <div className="admin-k">Début</div>
-                    <div className="admin-v">
-                      {selStart.toLocaleDateString("fr-FR", {
-                        day: "numeric",
-                        month: "short",
-                        year: "numeric",
-                      })}
-                    </div>
-                  </div>
-                  <div>
-                    <div className="admin-k">Fin</div>
-                    <div className="admin-v">
-                      {(selEnd || selStart).toLocaleDateString("fr-FR", {
-                        day: "numeric",
-                        month: "short",
-                        year: "numeric",
-                      })}
-                    </div>
-                  </div>
-                  <div>
-                    <div className="admin-k">Nuits</div>
-                    <div className="admin-v">
-                      {daysBetween(selStart, selEnd || selStart) || 1}
-                    </div>
-                  </div>
-                </div>
+        {loading && !error && (
+          <div className="admin-empty">Chargement des réservations…</div>
+        )}
 
-                <label className="admin-label">Statut</label>
-                <div className="admin-radio-group">
-                  {STATUS_OPTIONS.map((o) => (
-                    <label
-                      key={o.k}
-                      className={`admin-radio ${form.status === o.k ? "active" : ""}`}
-                    >
-                      <input
-                        type="radio"
-                        checked={form.status === o.k}
-                        onChange={() => setForm((f) => ({ ...f, status: o.k }))}
-                      />
-                      {o.l}
-                    </label>
-                  ))}
-                </div>
-
-                <label className="admin-label">Commentaire</label>
-                <input
-                  className="admin-input"
-                  placeholder="Réservation Airbnb — Famille X"
-                  value={form.note}
-                  onChange={(e) => setForm((f) => ({ ...f, note: e.target.value }))}
+        {!loading && !error && (
+          <div className="admin-cal-grid">
+            <div className="admin-cal-months">
+              {months.map((m, i) => (
+                <AdminMonth
+                  key={i}
+                  year={m.getFullYear()}
+                  month={m.getMonth()}
+                  today={today}
+                  reservations={reservations}
+                  selStart={selStart}
+                  selEnd={selEnd}
+                  onClick={clickDay}
                 />
+              ))}
+            </div>
 
-                <div style={{ display: "flex", gap: 8, marginTop: 20, flexWrap: "wrap" }}>
-                  <button className="admin-btn admin-btn-primary" onClick={saveRange}>
-                    Enregistrer
-                  </button>
-                  {form.id !== undefined && (
-                    <button className="admin-btn admin-btn-danger" onClick={deleteRange}>
-                      Supprimer
-                    </button>
-                  )}
-                  <button className="admin-btn admin-btn-ghost" onClick={cancel}>
-                    Annuler
-                  </button>
+            <aside className="admin-cal-side">
+              <div className="admin-side-title">
+                {form.id
+                  ? "Éditer la réservation"
+                  : selStart
+                    ? "Nouvelle période"
+                    : "Sélection"}
+              </div>
+              {!selStart && (
+                <div className="admin-empty">
+                  Aucune période sélectionnée.
+                  <br />
+                  Cliquez sur un jour pour commencer.
                 </div>
-              </>
-            )}
-          </aside>
-        </div>
+              )}
+              {selStart && (
+                <>
+                  <div className="admin-range">
+                    <div>
+                      <div className="admin-k">Début</div>
+                      <div className="admin-v">
+                        {selStart.toLocaleDateString("fr-FR", {
+                          day: "numeric",
+                          month: "short",
+                          year: "numeric",
+                        })}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="admin-k">Fin</div>
+                      <div className="admin-v">
+                        {(selEnd || selStart).toLocaleDateString("fr-FR", {
+                          day: "numeric",
+                          month: "short",
+                          year: "numeric",
+                        })}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="admin-k">Nuits</div>
+                      <div className="admin-v">
+                        {daysBetween(selStart, selEnd || selStart) || 1}
+                      </div>
+                    </div>
+                  </div>
+
+                  <label className="admin-label">Statut</label>
+                  <div className="admin-radio-group">
+                    {STATUS_OPTIONS.map((o) => (
+                      <label
+                        key={o.k}
+                        className={`admin-radio ${form.status === o.k ? "active" : ""}`}
+                      >
+                        <input
+                          type="radio"
+                          checked={form.status === o.k}
+                          onChange={() => setForm((f) => ({ ...f, status: o.k }))}
+                        />
+                        {o.l}
+                      </label>
+                    ))}
+                  </div>
+
+                  <label className="admin-label">Commentaire</label>
+                  <input
+                    className="admin-input"
+                    placeholder="Réservation Airbnb — Famille X"
+                    value={form.note}
+                    onChange={(e) => setForm((f) => ({ ...f, note: e.target.value }))}
+                  />
+
+                  <div
+                    style={{ display: "flex", gap: 8, marginTop: 20, flexWrap: "wrap" }}
+                  >
+                    <button
+                      className="admin-btn admin-btn-primary"
+                      onClick={saveRange}
+                      disabled={busy}
+                    >
+                      {busy ? "…" : "Enregistrer"}
+                    </button>
+                    {form.id !== undefined && (
+                      <button
+                        className="admin-btn admin-btn-danger"
+                        onClick={deleteRange}
+                        disabled={busy}
+                      >
+                        Supprimer
+                      </button>
+                    )}
+                    <button
+                      className="admin-btn admin-btn-ghost"
+                      onClick={cancel}
+                      disabled={busy}
+                    >
+                      Annuler
+                    </button>
+                  </div>
+                </>
+              )}
+            </aside>
+          </div>
+        )}
       </div>
 
       <div className="admin-card">
@@ -310,7 +404,7 @@ export function AdminCalendarView() {
             <div className="admin-card-title">Prochaines réservations</div>
             <div className="admin-card-sub">Triées par date d&rsquo;arrivée</div>
           </div>
-          <button className="admin-btn admin-btn-ghost admin-btn-sm">
+          <button className="admin-btn admin-btn-ghost admin-btn-sm" disabled>
             Importer .ics Airbnb
           </button>
         </div>
@@ -353,7 +447,9 @@ export function AdminCalendarView() {
                   </td>
                   <td>{daysBetween(s, e)}</td>
                   <td>
-                    <span className={`admin-pill admin-pill-${r.status}`}>{statusLabel}</span>
+                    <span className={`admin-pill admin-pill-${r.status}`}>
+                      {statusLabel}
+                    </span>
                   </td>
                   <td style={{ color: "var(--a-muted)" }}>{r.note}</td>
                   <td style={{ textAlign: "right" }}>
@@ -362,9 +458,8 @@ export function AdminCalendarView() {
                     </button>
                     <button
                       className="admin-link admin-link-danger"
-                      onClick={() =>
-                        setReservations((rs) => rs.filter((x) => x.id !== r.id))
-                      }
+                      onClick={() => deleteOne(r.id)}
+                      disabled={busy}
                     >
                       Suppr.
                     </button>
@@ -403,7 +498,9 @@ export function AdminCalendarView() {
           </div>
         </div>
         <div style={{ marginTop: 20 }}>
-          <button className="admin-btn admin-btn-ghost">Synchroniser maintenant</button>
+          <button className="admin-btn admin-btn-ghost" disabled>
+            Synchroniser maintenant
+          </button>
         </div>
       </div>
 

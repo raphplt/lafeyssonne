@@ -1,6 +1,7 @@
 "use client";
 
-import { PRICING, addDays, daysBetween } from "../lib/calendar";
+import { addDays, daysBetween } from "../lib/calendar";
+import { buildPricingByMonth, useSiteData } from "../lib/siteData";
 import { ArrowIcon } from "./Icons";
 
 type Props = {
@@ -10,6 +11,10 @@ type Props = {
 };
 
 export function ReservationSummary({ checkIn, checkOut, onReset }: Props) {
+  const { pricing } = useSiteData();
+  const byMonth = buildPricingByMonth(pricing);
+  const fallback = pricing[0]?.price ?? 220;
+
   if (!checkIn) {
     return (
       <div className="pc-summary pc-summary-empty">
@@ -46,12 +51,12 @@ export function ReservationSummary({ checkIn, checkOut, onReset }: Props) {
   let cur = new Date(checkIn);
   for (let i = 0; i < nights; i++) {
     const m = cur.getMonth() + 1;
-    total += PRICING[m]?.price ?? 220;
+    total += byMonth[m]?.price ?? fallback;
     cur = addDays(cur, 1);
   }
   const month = checkIn.getMonth() + 1;
-  const minNights = PRICING[month]?.min ?? 7;
-  const monthLabel = PRICING[month]?.label ?? "";
+  const minNights = byMonth[month]?.min_nights ?? 7;
+  const monthLabel = byMonth[month]?.period ?? "";
   const meets = nights >= minNights;
 
   return (
@@ -98,10 +103,14 @@ export function ReservationSummary({ checkIn, checkOut, onReset }: Props) {
 
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
         <div>
-          <div className="small">Total estimé · tarif {monthLabel.toLowerCase()}</div>
+          <div className="small">
+            Total estimé
+            {monthLabel ? ` · tarif ${monthLabel.toLowerCase()}` : ""}
+          </div>
           {!meets && (
             <div className="small" style={{ color: "var(--terracotta)", marginTop: 6 }}>
-              Séjour minimum {minNights} nuits en {monthLabel.toLowerCase()}.
+              Séjour minimum {minNights} nuits{" "}
+              {monthLabel ? `en ${monthLabel.toLowerCase()}` : ""}.
             </div>
           )}
         </div>

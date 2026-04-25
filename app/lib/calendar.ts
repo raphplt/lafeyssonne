@@ -15,7 +15,7 @@ export const MONTHS_FR = [
 
 export const WEEKDAYS_FR = ["L", "M", "M", "J", "V", "S", "D"];
 
-export type BookedRange = { start: string; end: string; label: string };
+export type BookedRange = { start: string; end: string; label?: string };
 
 export const BOOKED_RANGES: BookedRange[] = [
   { start: "2026-05-10", end: "2026-05-17", label: "Famille R." },

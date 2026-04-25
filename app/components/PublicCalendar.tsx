@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState } from "react";
 import {
-  BOOKED_RANGES,
   MONTHS_FR,
   WEEKDAYS_FR,
   addDays,
@@ -12,6 +11,7 @@ import {
   mondayIndex,
   startOfMonth,
 } from "../lib/calendar";
+import type { BookedRange } from "../lib/siteData";
 import { ChevronLeftIcon, ChevronRightIcon } from "./Icons";
 
 type Props = {
@@ -19,16 +19,23 @@ type Props = {
   checkOut: Date | null;
   setCheckIn: (d: Date | null) => void;
   setCheckOut: (d: Date | null) => void;
+  bookedRanges: BookedRange[];
 };
 
-export function PublicCalendar({ checkIn, checkOut, setCheckIn, setCheckOut }: Props) {
+export function PublicCalendar({
+  checkIn,
+  checkOut,
+  setCheckIn,
+  setCheckOut,
+  bookedRanges,
+}: Props) {
   const today = useMemo(() => {
     const t = new Date();
     t.setHours(0, 0, 0, 0);
     return t;
   }, []);
   const [anchor, setAnchor] = useState(() => new Date(2026, 4, 1));
-  const bookedSet = useMemo(() => buildBookedSet(BOOKED_RANGES), []);
+  const bookedSet = useMemo(() => buildBookedSet(bookedRanges), [bookedRanges]);
   const [hoverDate, setHoverDate] = useState<Date | null>(null);
   const [isMobile, setIsMobile] = useState(false);
 
