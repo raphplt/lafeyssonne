@@ -11,10 +11,11 @@ import { SiteFooter } from "./components/SiteFooter";
 import { SiteHeader } from "./components/SiteHeader";
 import { Surroundings } from "./components/Surroundings";
 import { Testimonials } from "./components/Testimonials";
+import { DatesProvider } from "./lib/datesContext";
 
 export default function Home() {
   return (
-    <>
+    <DatesProvider>
       <RevealMount />
       <SiteHeader />
       <main>
@@ -30,6 +31,6 @@ export default function Home() {
       </main>
       <SiteFooter />
       <MobileSticky />
-    </>
+    </DatesProvider>
   );
 }

@@ -338,6 +338,8 @@ img {
 }
 .hero-video {
   transition: opacity 800ms var(--ease);
+  transform: scale(1.3);
+  transform-origin: center;
 }
 .hero-loader {
   position: absolute;

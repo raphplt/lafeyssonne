@@ -7,7 +7,7 @@ export function Hero() {
     <section id="hero" className="hero">
       <div className="hero-img">
         <HeroVideo
-          src="/videos/video-promo-light.mp4"
+          src="/videos/video-promo-hero.mp4"
           poster="/images/pictbien_68cab2ebe7e0e.avif"
           posterAlt="Bastide La Feyssonne — façade au coucher du soleil"
         />

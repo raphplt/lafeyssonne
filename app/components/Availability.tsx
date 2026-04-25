@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useDates } from "../lib/datesContext";
 import { PublicCalendar } from "./PublicCalendar";
 import { ReservationSummary } from "./ReservationSummary";
 
@@ -13,8 +13,7 @@ const PRICES = [
 ];
 
 export function Availability() {
-  const [checkIn, setCheckIn] = useState<Date | null>(null);
-  const [checkOut, setCheckOut] = useState<Date | null>(null);
+  const { checkIn, checkOut, setCheckIn, setCheckOut } = useDates();
 
   return (
     <section id="dispos" className="section reveal">
