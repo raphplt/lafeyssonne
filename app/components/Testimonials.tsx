@@ -46,7 +46,7 @@ export function Testimonials() {
             10<span className="reputation-out">/10</span>
           </span>
           <span className="reputation-meta">
-            <em>Exceptionnel</em> — 52 avis vérifiés sur Abritel
+            <em>Exceptionnel</em> — 32 avis vérifiés sur Abritel
           </span>
         </div>
         <div

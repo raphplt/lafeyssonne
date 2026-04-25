@@ -19,16 +19,16 @@ export function ReservationCTA() {
 
   const airbnbUrl = hasDates
     ? buildUrl(AIRBNB_BASE, {
-        check_in: fmtKey(checkIn),
-        check_out: fmtKey(checkOut),
-      })
+      check_in: fmtKey(checkIn),
+      check_out: fmtKey(checkOut),
+    })
     : AIRBNB_BASE;
 
   const abritelUrl = hasDates
     ? buildUrl(ABRITEL_BASE, {
-        chkin: fmtKey(checkIn),
-        chkout: fmtKey(checkOut),
-      })
+      chkin: fmtKey(checkIn),
+      chkout: fmtKey(checkOut),
+    })
     : ABRITEL_BASE;
 
   const datesLabel = hasDates
@@ -107,7 +107,7 @@ export function ReservationCTA() {
               height={38}
               className="cta-logo cta-logo-abritel"
             />
-            <div className="cta-rating" aria-label="Note 10 sur 10, 52 avis">
+            <div className="cta-rating" aria-label="Note 10 sur 10, 32 avis">
               <span className="cta-rating-stars" aria-hidden="true">
                 <StarIcon />
                 <StarIcon />
@@ -116,7 +116,7 @@ export function ReservationCTA() {
                 <StarIcon />
               </span>
               <span className="cta-rating-score serif">10<span className="cta-rating-out">/10</span></span>
-              <span className="cta-rating-count small">· 52 avis vérifiés</span>
+              <span className="cta-rating-count small">· 32 avis vérifiés</span>
             </div>
             <div className="cta-num serif" style={{ fontSize: "1.6rem", marginTop: 4 }}>
               {hasDates ? "Réserver ces dates" : "Voir l’annonce"}
