@@ -289,6 +289,19 @@ img {
 .site-header.scrolled .site-brand {
   color: var(--brun);
 }
+.site-logo {
+  height: 44px;
+  width: auto;
+  display: block;
+  /* Sur le hero (header non scrollé) : silhouette ivoire pour rester lisible */
+  filter: brightness(0) invert(1);
+  transition: filter var(--t-med) var(--ease), height var(--t-med) var(--ease);
+}
+.site-header.scrolled .site-logo {
+  /* Header scrollé sur fond ivoire → rendu original (terracotta + brun) */
+  filter: none;
+  height: 36px;
+}
 .site-nav {
   display: flex;
   gap: 32px;
@@ -1028,6 +1041,11 @@ img {
   align-items: center;
   gap: 16px;
   color: var(--brun);
+}
+.footer-logo {
+  height: 64px;
+  width: auto;
+  display: block;
 }
 .footer-links {
   display: flex;

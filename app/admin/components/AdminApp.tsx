@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { signOut } from "../actions";
@@ -27,12 +28,16 @@ export function AdminApp({ userEmail }: Props) {
   return (
     <div className={`admin-root ${dark ? "admin-dark" : ""}`}>
       <aside className="admin-side">
-        <div className="admin-logo">
-          <div className="admin-logo-mark">LF</div>
-          <div>
-            <div className="admin-logo-name">La Feyssonne</div>
-            <div className="admin-logo-sub">Admin</div>
-          </div>
+        <div className="admin-logo admin-logo-stacked">
+          <Image
+            src="/logo.png"
+            alt="La Feyssonne"
+            width={160}
+            height={98}
+            priority
+            className="admin-side-logo"
+          />
+          <div className="admin-logo-sub">Admin</div>
         </div>
         <nav className="admin-nav">
           <button

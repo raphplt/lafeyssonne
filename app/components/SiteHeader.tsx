@@ -1,7 +1,7 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useState } from "react";
-import { Monogram } from "./Monogram";
 
 export function SiteHeader() {
   const [scrolled, setScrolled] = useState(false);
@@ -16,11 +16,15 @@ export function SiteHeader() {
   return (
     <header className={`site-header ${scrolled ? "scrolled" : ""}`}>
       <div className="container site-header-inner">
-        <a href="#hero" className="site-brand">
-          <Monogram size={28} />
-          <span className="serif" style={{ fontSize: "1.1rem" }}>
-            La Feyssonne
-          </span>
+        <a href="#hero" className="site-brand" aria-label="La Feyssonne — accueil">
+          <Image
+            src="/logo.png"
+            alt="La Feyssonne"
+            width={156}
+            height={95}
+            priority
+            className="site-logo"
+          />
         </a>
         <nav className="site-nav">
           <a href="#maison">La maison</a>

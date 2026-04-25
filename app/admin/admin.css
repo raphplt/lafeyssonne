@@ -64,6 +64,21 @@
   border-bottom: 1px solid var(--a-border);
   margin-bottom: 16px;
 }
+.admin-logo-stacked {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 6px 18px;
+}
+.admin-side-logo {
+  height: auto;
+  width: clamp(120px, 80%, 160px);
+  display: block;
+}
+.admin-dark .admin-side-logo {
+  /* Mode sombre : silhouette claire */
+  filter: brightness(0) invert(1);
+}
 .admin-logo-mark {
   width: 34px;
   height: 34px;

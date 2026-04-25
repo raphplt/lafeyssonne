@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { signIn } from "../actions";
 import "../admin.css";
 
@@ -17,10 +18,23 @@ export default async function LoginPage({ searchParams }: Props) {
   return (
     <div className="admin-login">
       <div className="admin-login-card">
-        <div className="admin-logo-mark" style={{ margin: "0 auto 24px" }}>
-          LF
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            marginBottom: 20,
+          }}
+        >
+          <Image
+            src="/logo.png"
+            alt="La Feyssonne"
+            width={160}
+            height={98}
+            priority
+            style={{ height: 64, width: "auto" }}
+          />
         </div>
-        <h1 className="admin-login-title">La Feyssonne — Admin</h1>
+        <h1 className="admin-login-title">Admin</h1>
         <p className="admin-login-sub">
           Connectez-vous pour gérer votre bastide.
         </p>
