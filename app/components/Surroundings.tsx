@@ -1,4 +1,53 @@
+"use client";
+
+import dynamic from "next/dynamic";
+import { useState } from "react";
+import type { Place } from "./SurroundingsMap";
+
+const Map = dynamic(() => import("./SurroundingsMap"), {
+  ssr: false,
+  loading: () => (
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        background: "var(--ivoire-90)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        color: "var(--brun-50)",
+        fontFamily: "var(--serif)",
+        fontStyle: "italic",
+        fontSize: 14,
+      }}
+    >
+      Carte en chargement…
+    </div>
+  ),
+});
+
+const HOME: Place = {
+  id: "home",
+  name: "La Feyssonne · Caseneuve",
+  lat: 43.886887,
+  lng: 5.484011,
+};
+
+const PLACES: Place[] = [
+  { id: "bonnieux",     name: "Bonnieux",                       lat: 43.8232, lng: 5.3105, duration: "15 min" },
+  { id: "lacoste",      name: "Lacoste",                        lat: 43.8351, lng: 5.2785, duration: "20 min" },
+  { id: "oppede",       name: "Oppède",                         lat: 43.8385, lng: 5.1665, duration: "25 min" },
+  { id: "gordes",       name: "Gordes",                         lat: 43.9116, lng: 5.1985, duration: "30 min" },
+  { id: "roussillon",   name: "Roussillon",                     lat: 43.9011, lng: 5.2934, duration: "15 min" },
+  { id: "rustrel",      name: "Rustrel — Colorado provençal",   lat: 43.9402, lng: 5.5023, duration: "4 km à pied" },
+  { id: "simiane",      name: "Simiane-la-Rotonde",             lat: 43.9806, lng: 5.5640, duration: "35 min" },
+  { id: "banon",        name: "Banon",                          lat: 43.9879, lng: 5.6332, duration: "40 min" },
+  { id: "forcalquier",  name: "Forcalquier",                    lat: 43.9598, lng: 5.7811, duration: "50 min" },
+];
+
 export function Surroundings() {
+  const [activeId, setActiveId] = useState<string | null>(null);
+
   return (
     <section id="alentours" className="section reveal">
       <div className="container">
@@ -34,132 +83,34 @@ export function Surroundings() {
             <div className="surr-sub">
               <span className="surr-label serif">À visiter</span>
               <ul className="surr-places">
-                <li>
-                  Bonnieux <span>15 min</span>
-                </li>
-                <li>
-                  Lacoste <span>20 min</span>
-                </li>
-                <li>
-                  Oppède <span>25 min</span>
-                </li>
-                <li>
-                  Gordes <span>30 min</span>
-                </li>
-                <li>
-                  Roussillon <span>15 min</span>
-                </li>
-                <li>
-                  Rustrel — Colorado provençal <span>4 km à pied</span>
-                </li>
-                <li>
-                  Simiane-la-Rotonde <span>35 min</span>
-                </li>
-                <li>
-                  Banon <span>40 min</span>
-                </li>
-                <li>
-                  Forcalquier <span>50 min</span>
-                </li>
+                {PLACES.map((p) => (
+                  <li
+                    key={p.id}
+                    className={`surr-place ${activeId === p.id ? "is-active" : ""}`}
+                    onMouseEnter={() => setActiveId(p.id)}
+                    onMouseLeave={() => setActiveId(null)}
+                    onFocus={() => setActiveId(p.id)}
+                    onBlur={() => setActiveId(null)}
+                    tabIndex={0}
+                  >
+                    <span>{p.name}</span>
+                    <span className="surr-place-dur">{p.duration}</span>
+                  </li>
+                ))}
               </ul>
             </div>
           </div>
 
           <div className="surr-map">
-            <MiniMap />
+            <Map
+              home={HOME}
+              places={PLACES}
+              activeId={activeId}
+              onActiveChange={setActiveId}
+            />
           </div>
         </div>
       </div>
     </section>
-  );
-}
-
-function MiniMap() {
-  const villages = [
-    { x: 60, y: 80, n: "Gordes" },
-    { x: 160, y: 60, n: "Roussillon" },
-    { x: 240, y: 40, n: "Rustrel" },
-    { x: 340, y: 80, n: "Simiane" },
-    { x: 100, y: 220, n: "Bonnieux" },
-    { x: 180, y: 250, n: "Lacoste" },
-    { x: 340, y: 220, n: "Forcalquier" },
-  ];
-  return (
-    <svg viewBox="0 0 420 320" fill="none" style={{ width: "100%", height: "auto" }}>
-      <rect width="420" height="320" fill="var(--ivoire-90)" />
-      <path
-        d="M 20 180 Q 120 160 210 170 T 400 150"
-        stroke="var(--brun-30)"
-        strokeWidth="0.6"
-        fill="none"
-      />
-      <path
-        d="M 40 60 Q 140 110 210 170 T 380 240"
-        stroke="var(--brun-15)"
-        strokeWidth="0.5"
-        fill="none"
-      />
-      <path d="M 210 170 L 210 40" stroke="var(--brun-15)" strokeWidth="0.5" fill="none" />
-      <path d="M 210 170 L 310 260" stroke="var(--brun-15)" strokeWidth="0.5" fill="none" />
-      {villages.map((p, i) => (
-        <g key={i}>
-          <circle cx={p.x} cy={p.y} r="2.5" fill="var(--brun-70)" />
-          <text
-            x={p.x + 8}
-            y={p.y + 4}
-            fontFamily="var(--serif)"
-            fontSize="11"
-            fill="var(--brun-70)"
-            fontStyle="italic"
-          >
-            {p.n}
-          </text>
-        </g>
-      ))}
-      <circle
-        cx="210"
-        cy="170"
-        r="10"
-        fill="none"
-        stroke="var(--terracotta)"
-        strokeWidth="0.8"
-        opacity="0.5"
-      />
-      <circle cx="210" cy="170" r="5" fill="var(--terracotta)" />
-      <text
-        x="222"
-        y="174"
-        fontFamily="var(--serif)"
-        fontSize="13"
-        fill="var(--terracotta)"
-        fontWeight="500"
-      >
-        La Feyssonne
-      </text>
-      <text
-        x="222"
-        y="188"
-        fontFamily="var(--sans)"
-        fontSize="9"
-        fill="var(--brun-70)"
-        letterSpacing="0.1em"
-      >
-        CASENEUVE · 84750
-      </text>
-      <g transform="translate(380 290)">
-        <circle r="12" fill="none" stroke="var(--brun-30)" strokeWidth="0.5" />
-        <text
-          y="-16"
-          fontFamily="var(--sans)"
-          fontSize="8"
-          fill="var(--brun-70)"
-          textAnchor="middle"
-          letterSpacing="0.1em"
-        >
-          N
-        </text>
-        <path d="M 0 -6 L -3 6 L 0 3 L 3 6 Z" fill="var(--brun-70)" />
-      </g>
-    </svg>
   );
 }

@@ -844,6 +844,25 @@ img {
   letter-spacing: -0.02em;
   margin-bottom: 6px;
 }
+.cta-logo {
+  height: 36px;
+  width: auto;
+  object-fit: contain;
+  object-position: left center;
+  margin-bottom: 12px;
+  transition: transform var(--t-fast) var(--ease);
+}
+.cta-card:hover .cta-logo {
+  transform: translateX(2px);
+}
+/* Airbnb logo : très haut, on garde la hauteur que prévu */
+.cta-logo-airbnb {
+  height: 32px;
+}
+/* Abritel : wordmark seul, on monte un peu pour équilibrer */
+.cta-logo-abritel {
+  height: 30px;
+}
 .cta-label {
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -907,26 +926,121 @@ img {
   padding: 0;
   margin: 0;
 }
-.surr-places li {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  padding: 10px 0;
+.surr-map {
+  background: var(--ivoire-90);
+  border: 1px solid var(--brun-15);
+  border-radius: 4px;
+  overflow: hidden;
+  min-height: 380px;
+  height: 100%;
+}
+@media (max-width: 960px) {
+  .surr-map {
+    min-height: 320px;
+  }
+}
+
+/* Liste « À visiter » : effet hover lié à la carte */
+.surr-place {
+  cursor: pointer;
+  padding: 10px 12px;
+  margin: 0 -12px;
   border-bottom: 1px solid var(--brun-15);
   font-family: var(--serif);
   font-size: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  transition: background var(--t-fast) var(--ease),
+    color var(--t-fast) var(--ease), padding-left var(--t-fast) var(--ease);
 }
-.surr-places li span {
+.surr-place:last-child {
+  border-bottom: none;
+}
+.surr-place:hover,
+.surr-place.is-active,
+.surr-place:focus-visible {
+  background: var(--terracotta-soft);
+  color: var(--terracotta);
+  padding-left: 16px;
+  outline: none;
+}
+.surr-place-dur {
   font-family: var(--sans);
   font-size: 11px;
   letter-spacing: 0.08em;
   color: var(--brun-50);
   text-transform: uppercase;
 }
-.surr-map {
-  background: var(--ivoire-90);
+.surr-place.is-active .surr-place-dur,
+.surr-place:hover .surr-place-dur {
+  color: var(--terracotta);
+}
+
+/* Override des styles Leaflet par défaut pour coller au design */
+.leaflet-container {
+  font-family: var(--sans);
+}
+.leaflet-control-attribution {
+  background: rgba(247, 244, 238, 0.85) !important;
+  color: var(--brun-50) !important;
+  font-size: 9px !important;
+  letter-spacing: 0.02em;
+  padding: 2px 6px !important;
+}
+.leaflet-control-attribution a {
+  color: var(--brun-70) !important;
+}
+.leaflet-control-zoom {
+  border: 1px solid var(--brun-15) !important;
+  border-radius: 2px !important;
+  overflow: hidden;
+  box-shadow: none !important;
+}
+.leaflet-control-zoom a {
+  background: var(--ivoire) !important;
+  color: var(--brun) !important;
+  border-bottom: 1px solid var(--brun-15) !important;
+  font-family: var(--serif);
+  font-weight: 300;
+}
+.leaflet-control-zoom a:hover {
+  background: var(--brun) !important;
+  color: var(--ivoire) !important;
+}
+
+/* Tooltips personnalisés */
+.lf-tooltip.leaflet-tooltip {
+  background: var(--ivoire);
   border: 1px solid var(--brun-15);
-  padding: 24px;
+  color: var(--brun);
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 2px;
+  box-shadow: 0 2px 8px rgba(42, 31, 20, 0.08);
+  white-space: nowrap;
+}
+.lf-tooltip.leaflet-tooltip::before,
+.lf-tooltip.leaflet-tooltip::after {
+  display: none !important;
+}
+.lf-tooltip-active {
+  background: var(--terracotta);
+  color: var(--ivoire);
+  border-color: var(--terracotta);
+  font-style: normal;
+  font-weight: 500;
+}
+.lf-tooltip-home {
+  background: var(--brun);
+  color: var(--ivoire);
+  border-color: var(--brun);
+  font-style: normal;
+  font-weight: 500;
+  font-size: 11px;
+  letter-spacing: 0.04em;
 }
 
 /* TESTIMONIALS */

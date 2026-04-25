@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { fmtKey } from "../lib/calendar";
 import { useDates } from "../lib/datesContext";
 import { ArrowIcon, ExternalIcon, PhoneIcon } from "./Icons";
@@ -74,7 +75,13 @@ export function ReservationCTA() {
             rel="noopener noreferrer"
             className="cta-card"
           >
-            <div className="cta-platform serif">Airbnb</div>
+            <Image
+              src="/logos/airbnb.png"
+              alt="Airbnb"
+              width={120}
+              height={38}
+              className="cta-logo cta-logo-airbnb"
+            />
             <div className="cta-label small">Plateforme</div>
             <div className="cta-num serif" style={{ fontSize: "1.6rem" }}>
               {hasDates ? "Réserver ces dates" : "Voir l’annonce"}
@@ -93,7 +100,13 @@ export function ReservationCTA() {
             rel="noopener noreferrer"
             className="cta-card"
           >
-            <div className="cta-platform serif">Abritel</div>
+            <Image
+              src="/logos/abritel.png"
+              alt="Abritel"
+              width={120}
+              height={38}
+              className="cta-logo cta-logo-abritel"
+            />
             <div className="cta-label small">Plateforme</div>
             <div className="cta-num serif" style={{ fontSize: "1.6rem" }}>
               {hasDates ? "Réserver ces dates" : "Voir l’annonce"}
