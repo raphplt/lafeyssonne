@@ -571,14 +571,21 @@ img {
 }
 .equip-col li {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   gap: 12px;
   font-size: 14px;
   color: var(--brun);
+  line-height: 1.45;
 }
 .equip-col li svg {
   color: var(--olive);
   flex-shrink: 0;
+  position: relative;
+  top: 4px;
+}
+/* Items sans icône : indent équivalent à icône (20px) + gap (12px) */
+.equip-col li:not(:has(svg)) {
+  padding-left: 32px;
 }
 
 /* CHAMBRES — mini-galerie */

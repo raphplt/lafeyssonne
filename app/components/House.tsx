@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import {
-  AcIcon,
   BedIcon,
   ChefIcon,
   FireIcon,
@@ -98,9 +97,6 @@ export function House() {
                 <h4 className="equip-title">Confort</h4>
                 <ul>
                   <li>
-                    <AcIcon /> Climatisation
-                  </li>
-                  <li>
                     <WifiIcon /> Wifi haut débit
                   </li>
                   <li>
@@ -109,34 +105,43 @@ export function House() {
                   <li>
                     <FireIcon /> Cheminée
                   </li>
+                  <li>Télévision satellite &amp; lecteur DVD</li>
+                  <li>Sèche-cheveux, fer à repasser &amp; table</li>
+                  <li>Jeux de société</li>
                 </ul>
               </div>
               <div className="equip-col">
                 <h4 className="equip-title">Cuisine</h4>
                 <ul>
                   <li>
-                    <ChefIcon /> Cuisine équipée
+                    <ChefIcon /> 2 cuisines équipées (intérieure &amp; d&rsquo;été)
                   </li>
                   <li>
-                    <WasherIcon /> Lave-vaisselle · lave-linge
+                    <WasherIcon /> 2 lave-vaisselle · 1 lave-linge
                   </li>
                   <li>
-                    <FireIcon /> Four, plaque induction
+                    <FireIcon /> Gazinière, four électrique, plaque gaz &amp; électrique
                   </li>
+                  <li>2 réfrigérateurs / congélateurs</li>
+                  <li>2 fours micro-ondes</li>
+                  <li>Petit électroménager</li>
                 </ul>
               </div>
               <div className="equip-col">
-                <h4 className="equip-title">Extérieur</h4>
+                <h4 className="equip-title">Extérieur &amp; jeux</h4>
                 <ul>
                   <li>
-                    <PoolIcon /> Piscine chauffée
+                    <PoolIcon /> Piscine chauffée · chaises longues
                   </li>
                   <li>
-                    <TreeIcon /> Parc clos &amp; arboré
+                    <TreeIcon /> Parc arboré
                   </li>
                   <li>
                     <ParkIcon /> Parking privé
                   </li>
+                  <li>Tables, chaises &amp; fauteuils</li>
+                  <li>Boulodrome &amp; boules de pétanque</li>
+                  <li>Table de ping-pong, panier de basket, filet de volley</li>
                 </ul>
               </div>
             </div>
