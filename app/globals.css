@@ -497,6 +497,18 @@ img {
   grid-column: span 7;
   grid-row: span 2;
 }
+.bento-h {
+  grid-column: span 4;
+  grid-row: span 3;
+}
+.bento-i {
+  grid-column: span 8;
+  grid-row: span 3;
+}
+.bento-j {
+  grid-column: span 12;
+  grid-row: span 2;
+}
 
 @media (max-width: 860px) {
   .bento {
@@ -1078,6 +1090,52 @@ img {
 .surr-place.is-active .surr-place-dur,
 .surr-place:hover .surr-place-dur {
   color: var(--terracotta);
+}
+
+/* Marchés du coin */
+.surr-markets {
+  margin-top: 56px;
+  padding-top: 32px;
+  border-top: 1px solid var(--brun-15);
+}
+.markets-list {
+  list-style: none;
+  padding: 0;
+  margin: 16px 0 0;
+}
+.markets-row {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 24px;
+  align-items: baseline;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--brun-15);
+}
+.markets-row:last-child {
+  border-bottom: none;
+}
+.markets-day {
+  font-size: 1rem;
+  color: var(--brun);
+}
+.markets-note {
+  font-style: italic;
+  font-size: 12px;
+  color: var(--brun-50);
+  letter-spacing: 0.02em;
+}
+.markets-villages {
+  font-family: var(--serif);
+  font-size: 1rem;
+  font-weight: 300;
+  line-height: 1.6;
+  color: var(--brun-70);
+}
+@media (max-width: 720px) {
+  .markets-row {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
 }
 
 /* Override des styles Leaflet par défaut pour coller au design */

@@ -45,6 +45,19 @@ const PLACES: Place[] = [
   { id: "forcalquier",  name: "Forcalquier",                    lat: 43.9598, lng: 5.7811, duration: "50 min" },
 ];
 
+type Market = { day: string; villages: string; note?: string };
+
+const MARKETS: Market[] = [
+  { day: "Lundi",    villages: "Forcalquier" },
+  { day: "Mardi",    villages: "Apt (marché paysan), Gordes, Banon" },
+  { day: "Mercredi", villages: "Lacoste, Viens", note: "matin" },
+  { day: "Mercredi", villages: "Sault, Rustrel",  note: "après-midi" },
+  { day: "Jeudi",    villages: "Céreste, Goult, Ménerbes, Roussillon, Aubignan, Isle-sur-la-Sorgue", note: "matin" },
+  { day: "Vendredi", villages: "Bonnieux, Lourmarin, Carpentras, Apt, Manosque", note: "matin" },
+  { day: "Samedi",   villages: "Pernes-les-Fontaines, Apt, Isle-sur-la-Sorgue", note: "matin" },
+  { day: "Dimanche", villages: "Coustellet, Isle-sur-la-Sorgue", note: "matin" },
+];
+
 export function Surroundings() {
   const [activeId, setActiveId] = useState<string | null>(null);
 
@@ -109,6 +122,21 @@ export function Surroundings() {
               onActiveChange={setActiveId}
             />
           </div>
+        </div>
+
+        <div className="surr-markets">
+          <span className="surr-label serif">Les marchés du coin</span>
+          <ul className="markets-list">
+            {MARKETS.map((m, i) => (
+              <li key={i} className="markets-row">
+                <span className="markets-day serif">
+                  {m.day}
+                  {m.note ? <em className="markets-note"> · {m.note}</em> : null}
+                </span>
+                <span className="markets-villages">{m.villages}</span>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </section>

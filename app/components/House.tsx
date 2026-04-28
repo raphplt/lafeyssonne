@@ -14,7 +14,7 @@ import {
 import { Lightbox, type LightboxPhoto } from "./Lightbox";
 
 const BEDROOMS: LightboxPhoto[] = [
-  { src: "/images/chambre-blanche.avif", label: "Chambre blanche" },
+  { src: "/images/chambre-deux-lits.avif", label: "Chambre deux lits" },
   { src: "/images/chambre-bois.avif",    label: "Chambre bois" },
   { src: "/images/chambre-orange.avif",  label: "Chambre orange" },
   { src: "/images/chambre-rose.avif",    label: "Chambre rose" },
@@ -131,7 +131,7 @@ export function House() {
                 <h4 className="equip-title">Extérieur &amp; jeux</h4>
                 <ul>
                   <li>
-                    <PoolIcon /> Piscine chauffée · chaises longues
+                    <PoolIcon /> Piscine chauffée · transats
                   </li>
                   <li>
                     <TreeIcon /> Parc arboré
@@ -139,6 +139,7 @@ export function House() {
                   <li>
                     <ParkIcon /> Parking privé
                   </li>
+                  <li>Salon de jardin</li>
                   <li>Tables, chaises &amp; fauteuils</li>
                   <li>Boulodrome &amp; boules de pétanque</li>
                   <li>Table de ping-pong, panier de basket, filet de volley</li>

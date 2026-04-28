@@ -66,6 +66,7 @@ export function Availability() {
               </div>
               <div>Draps et linge fournis</div>
               <div>Entretien jardin et piscine inclus</div>
+              <div>Piscine ouverte d&rsquo;avril à fin septembre</div>
             </div>
             <hr className="divider" style={{ margin: "24px 0" }} />
             <div className="small" style={{ lineHeight: 1.7 }}>

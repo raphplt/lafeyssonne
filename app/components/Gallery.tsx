@@ -42,6 +42,21 @@ const PHOTOS: Photo[] = [
     label: "la piscine à la nuit tombée",
     span: "g",
   },
+  {
+    src: "/images/terrasse-pierre-seche.avif",
+    label: "coin terrasse, murets en pierre sèche",
+    span: "h",
+  },
+  {
+    src: "/images/parc-ping-pong.avif",
+    label: "table de ping-pong dans le parc",
+    span: "i",
+  },
+  {
+    src: "/images/paysage-lavande.avif",
+    label: "champs de lavande du Luberon",
+    span: "j",
+  },
 ];
 
 export function Gallery() {
