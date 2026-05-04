@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { GithubIcon, GlobeIcon, HeartIcon, LinkedinIcon } from "./Icons";
 
 export function SiteFooter() {
   return (
@@ -21,6 +22,37 @@ export function SiteFooter() {
         <div className="small" style={{ color: "var(--brun-50)" }}>
           © 2026 · Mentions légales
         </div>
+      </div>
+      <div className="container footer-credits small">
+        <span>
+          Fait avec <HeartIcon className="footer-heart" aria-hidden="true" /> par Raphaël
+        </span>
+        <span className="footer-credits-links">
+          <a
+            href="https://github.com/raphplt"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="GitHub"
+          >
+            <GithubIcon />
+          </a>
+          <a
+            href="https://www.linkedin.com/in/raphaël-plassart"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="LinkedIn"
+          >
+            <LinkedinIcon />
+          </a>
+          <a
+            href="https://atlas.raphael-plassart.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Atlas"
+          >
+            <GlobeIcon />
+          </a>
+        </span>
       </div>
     </footer>
   );

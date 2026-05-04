@@ -887,8 +887,16 @@ img {
   grid-template-columns: repeat(3, 1fr);
   gap: 20px;
 }
+.cta-duo {
+  grid-template-columns: repeat(2, 1fr);
+  max-width: 760px;
+  margin: 0 auto;
+}
 @media (max-width: 820px) {
   .cta-trio {
+    grid-template-columns: 1fr;
+  }
+  .cta-duo {
     grid-template-columns: 1fr;
   }
 }
@@ -1376,6 +1384,38 @@ img {
 }
 .footer-links a:hover {
   opacity: 1;
+}
+.footer-credits {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 32px;
+  padding-top: 20px;
+  border-top: 1px solid var(--brun-15);
+  color: var(--brun-50);
+}
+.footer-credits-links {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+}
+.footer-credits-links a {
+  color: var(--brun-70);
+  display: inline-flex;
+  opacity: 0.7;
+  transition: opacity var(--t-fast) var(--ease), color var(--t-fast) var(--ease);
+}
+.footer-credits-links a:hover {
+  opacity: 1;
+  color: var(--terracotta);
+}
+.footer-heart {
+  display: inline-block;
+  vertical-align: -2px;
+  color: var(--terracotta);
+  margin: 0 2px;
 }
 
 /* LIGHTBOX */
